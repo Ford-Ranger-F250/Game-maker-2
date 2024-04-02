@@ -1,0 +1,54 @@
+/// @description Gerador Procedural de Mapa
+// Defina as dimensões do mapa e o tamanho da célula
+largura_mapa = room_width;
+altura_mapa = room_height;
+tamanho_celula = 32;
+// Inicialize variáveis para controlar a geração de gelo e areia
+var gelo = false;
+var areia = false;
+// Crie uma matriz para representar o mapa
+mapa = ds_grid_create(largura_mapa, altura_mapa);
+// Gere o mapa inicialmente
+for (var _y = 0; _y < altura_mapa; _y++) {
+    for (var _x = 0; _x < largura_mapa; _x++) {
+        var _temporario = irandom_range(0, 4);
+// Verifique se já foram atribuídos gelo ou areia
+        if (areia && gelo) {
+            _temporario = choose(0, 1, 2);
+        } else if (gelo) {
+            _temporario = choose(0, 1, 2, 3);
+        } else if (areia) {
+            _temporario = choose(0, 1, 2, 4);
+        }
+        // Se for gelo, marque a variável de controle como verdadeira
+        if (_temporario == 4 && !gelo) {
+            gelo = true;
+        }
+        // Se for areia, marque a variável de controle como verdadeira
+        if (_temporario == 3 && !areia) {
+            areia = true;
+        }
+        //ocean build
+        // the problem now is create at the right and bottom map
+        // the ## need a var for the limit of the map
+        if _x = 0 or _x = ## {mapa[# _x, _y] = 2}
+        else if _y = 0 or _y = ## {mapa[# _x, _y] = 2}
+        else mapa[# _x, _y] = _temporario;
+    }
+}
+// Aplique o filtro de vizinhança
+for (var _y = 1; _y < altura_mapa - 1; _y++) {
+    for (var _x = 1; _x < largura_mapa - 1; _x++) {
+        // Verifique se o valor atual é diferente dos valores ao redor
+        if (mapa[# _x, _y] != mapa[# _x + 1, _y] &&
+            mapa[# _x, _y] != mapa[# _x - 1, _y] &&
+            mapa[# _x, _y] != mapa[# _x, _y + 1] &&
+            mapa[# _x, _y] != mapa[# _x, _y - 1])
+        {
+            // Se for diferente, copie um valor aleatório dos vizinhos
+            var novoX = _x + choose(-1, 1);
+            var novoY = _y + choose(-1, 1);
+            mapa[# _x, _y] = mapa[# novoX, novoY];
+        }
+    }
+}
